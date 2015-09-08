@@ -1,0 +1,31 @@
+{
+  "name": "winston-slacker",
+  "version": "1.0.0",
+  "description": "Slack integration for Winston",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meerkats/winston-slacker.git"
+  },
+  "keywords": [
+    "slack",
+    "winston",
+    "log",
+    "slacker",
+    "meerkats",
+    "logger"
+  ],
+  "author": "Meerkats <develop@meerkats.com.au> (http://meerkats.com.au)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meerkats/winston-slacker/issues"
+  },
+  "homepage": "https://github.com/meerkats/winston-slacker#readme",
+  "dependencies": {
+    "request": "^2.61.0",
+    "winston": "^1.0.1"
+  }
+}
