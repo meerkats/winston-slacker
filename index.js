@@ -15,8 +15,8 @@ function Slack(options) {
   options = extend({
     channel: '#general',
     username: 'winston-slacker',
-    icon_url: false,
-    icon_emoji: false,
+    iconUrl: false,
+    iconEmoji: false,
     level: 'info',
     silent: false,
     raw: false,
@@ -30,30 +30,30 @@ function Slack(options) {
  * @param {function} Callback function for post execution
  */
   this.send = function (message, callback) {
-    var has_callback = typeof callback === 'function';
-    if (!(typeof message === 'object' && message.text) && has_callback) {
+    var hasCallback = typeof callback === 'function';
+    if (!(typeof message === 'object' && message.text) && hasCallback) {
       return callback(new Error('No message'));
     }
     var options = {
       channel: message.channel,
       text: message.text,
       username: message.username,
-      icon_emoji: this.icon_emoji,
-      icon_emoji: this.icon_emoji,
-      icon_url: this.icon_url,
+      iconEmoji: this.iconEmoji,
+      iconEmoji: this.iconEmoji,
+      iconUrl: this.iconUrl,
       attachments: this.attachments
     };
-    var request_params = {
+    var requestParams = {
       url: this.webhook,
       body: options,
       json: true
     };
 
-    request.post(request_params, function(err, res, body) {
-      if ((err || body !== 'ok') && has_callback) {
+    request.post(requestParams, function(err, res, body) {
+      if ((err || body !== 'ok') && hasallback) {
         return callback(err || new Error(body));
       }
-      if (has_callback) {
+      if (hasCallback) {
         callback(err, body);
       }
     });
