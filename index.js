@@ -39,6 +39,7 @@ function Slack(options) {
       text: message.text,
       username: message.username,
       icon_emoji: this.icon_emoji,
+      icon_emoji: this.icon_emoji,
       icon_url: this.icon_url,
       attachments: this.attachments
     };
@@ -71,12 +72,12 @@ winston.transports.Slack = Slack;
  */
 Slack.prototype.log = function (level, message, meta, callback) {
     // Use custom formatter for message if set
-    message = this.customFormatter ? this.customFormatter(level, message, meta) : { 
+    var slackMessage = this.customFormatter ? this.customFormatter(level, message, meta) : { 
       text: ['[', level , ']', ' ', message].join(''),
       channel: this.channel,
       username: this.username
     };
-    this.send(message, callback);
+    this.send(slackMessage, callback);
 };
 
 exports.Slack = Slack;
