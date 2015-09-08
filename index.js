@@ -7,7 +7,7 @@ var winston = require('winston');
  * Slack integration for Winston
  */
 function Slack(options) {
-  if (!(typeof options === 'object' && options.webhook)) {
+  if (typeof options !== 'object' && !options.webhook)) {
     throw new Error('Invalid options parameter');
   }
   this.webhook = options.webhook;
