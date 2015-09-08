@@ -7,7 +7,7 @@ var winston = require('winston');
  * Slack integration for Winston
  */
 function Slack(options) {
-  if (typeof options !== 'object' && !options.webhook)) {
+  if (typeof options !== 'object' || !options.webhook)) {
     throw new Error('Invalid options parameter');
   }
   this.webhook = options.webhook;
@@ -31,7 +31,7 @@ function Slack(options) {
  */
   this.send = function (message, callback) {
     var hasCallback = typeof callback === 'function';
-    if (!(typeof message === 'object' && message.text) && hasCallback) {
+    if ((typeof message !== 'object' || !message.text) && hasCallback) {
       return callback(new Error('No message'));
     }
     var options = {
@@ -50,7 +50,7 @@ function Slack(options) {
     };
 
     request.post(requestParams, function(err, res, body) {
-      if ((err || body !== 'ok') && hasallback) {
+      if ((err || body !== 'ok') && hasCallback) {
         return callback(err || new Error(body));
       }
       if (hasCallback) {
