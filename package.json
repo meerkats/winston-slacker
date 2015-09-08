@@ -2,7 +2,7 @@
   "name": "winston-slacker",
   "version": "1.0.0",
   "description": "Slack integration for Winston",
-  "main": "index.js",
+  "main": "./lib/winston-slacker.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
