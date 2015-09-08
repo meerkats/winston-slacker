@@ -80,4 +80,4 @@ Slack.prototype.log = function (level, message, meta, callback) {
     this.send(slackMessage, callback);
 };
 
-export default Slack;
+module.exports = Slack;
