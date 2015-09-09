@@ -11,7 +11,9 @@ function Slack(options) {
     throw new Error('Invalid options parameter');
   }
   this.webhook = options.webhook;
-  this.customFormatter = options.customFormatter;
+  this.customFormatter = options.customFormatter || function (level, message, meta) {
+    return ['[', level , ']', ' ', message].join('');
+  };
   this.options = extend({
     channel: '#general',
     username: 'winston-slacker',
@@ -26,7 +28,7 @@ function Slack(options) {
 
   /**
  * Handles the sending of a message to an Incoming webhook
- * @param {string} Message text
+ * @param {text} Message text
  * @param {function} Callback function for post execution
  */
   this.send = function (message, callback) {
@@ -40,10 +42,10 @@ function Slack(options) {
       json: true
     };
     request.post(requestParams, function(err, res, body) {
-      if (err || body !== 'ok') {
+      if ((err || body !== 'ok')) {
         return callback(err || new Error(body));
       }
-       callback(err, body);
+      callback(err, body);
     });
   };
 };
@@ -59,10 +61,7 @@ winston.transports.Slack = Slack;
  * @param {function} Callback function for post execution
  */
 Slack.prototype.log = function (level, message, meta, callback) {
-    // Use custom formatter for message if set
-    var slackMessage = this.customFormatter ? this.customFormatter(level, message, meta) : 
-      ['[', level , ']', ' ', message].join('');
-    this.send(slackMessage, callback);
+    this.send(this.customFormatter(level, message, meta), callback);
 };
 
 module.exports = Slack;
