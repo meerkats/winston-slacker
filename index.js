@@ -26,7 +26,7 @@ function Slack(options) {
 
   /**
  * Handles the sending of a message to an Incoming webhook
- * @param {text} Message text
+ * @param {string} Message text
  * @param {function} Callback function for post execution
  */
   this.send = function (message, callback) {
