@@ -12,7 +12,7 @@ function Slack(options) {
   }
   this.webhook = options.webhook;
   this.customFormatter = options.customFormatter;
-  options = extend({
+  this.options = extend({
     channel: '#general',
     username: 'winston-slacker',
     iconUrl: false,
@@ -26,38 +26,26 @@ function Slack(options) {
 
   /**
  * Handles the sending of a message to an Incoming webhook
- * @param {object} Message object containing text, channel and username
+ * @param {text} Message text
  * @param {function} Callback function for post execution
  */
   this.send = function (message, callback) {
-    var hasCallback = typeof callback === 'function';
-    if ((typeof message !== 'object' || !message.text) && hasCallback) {
+    var callback = callback || function () {};
+    if (!message) {
       return callback(new Error('No message'));
     }
-    var options = {
-      channel: message.channel,
-      text: message.text,
-      username: message.username,
-      iconEmoji: this.iconEmoji,
-      iconEmoji: this.iconEmoji,
-      iconUrl: this.iconUrl,
-      attachments: this.attachments
-    };
     var requestParams = {
       url: this.webhook,
-      body: options,
+      body: extend(options, { text: message }),
       json: true
     };
-
     request.post(requestParams, function(err, res, body) {
-      if ((err || body !== 'ok') && hasCallback) {
+      if ((err || body !== 'ok')) {
         return callback(err || new Error(body));
       }
-      if (hasCallback) {
-        callback(err, body);
-      }
+       callback(err, body);
     });
-  }
+  };
 };
 
 util.inherits(Slack, winston.Transport);
@@ -72,11 +60,8 @@ winston.transports.Slack = Slack;
  */
 Slack.prototype.log = function (level, message, meta, callback) {
     // Use custom formatter for message if set
-    var slackMessage = this.customFormatter ? this.customFormatter(level, message, meta) : { 
-      text: ['[', level , ']', ' ', message].join(''),
-      channel: this.channel,
-      username: this.username
-    };
+    var slackMessage = this.customFormatter ? this.customFormatter(level, message, meta) : 
+      ['[', level , ']', ' ', message].join('');
     this.send(slackMessage, callback);
 };
 
