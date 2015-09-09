@@ -32,7 +32,7 @@ function Slack(options) {
  * @param {function} Callback function for post execution
  */
   this.send = function (message, callback) {
-    var callback = callback || function () {};
+    callback = callback || function () {};
     if (!message) {
       return callback(new Error('No message'));
     }
@@ -48,7 +48,7 @@ function Slack(options) {
       callback(err, body);
     });
   };
-};
+}
 
 util.inherits(Slack, winston.Transport);
 winston.transports.Slack = Slack;
@@ -61,7 +61,7 @@ winston.transports.Slack = Slack;
  * @param {function} Callback function for post execution
  */
 Slack.prototype.log = function (level, message, meta, callback) {
-    this.send(this.customFormatter(level, message, meta), callback);
+  this.send(this.customFormatter(level, message, meta), callback);
 };
 
 module.exports = Slack;
