@@ -40,7 +40,7 @@ function Slack(options) {
       json: true
     };
     request.post(requestParams, function(err, res, body) {
-      if ((err || body !== 'ok')) {
+      if (err || body !== 'ok') {
         return callback(err || new Error(body));
       }
        callback(err, body);
