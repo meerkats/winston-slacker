@@ -11,9 +11,7 @@ function Slack(options) {
     throw new Error('Invalid options parameter');
   }
   this.webhook = options.webhook;
-  this.customFormatter = options.customFormatter || function (level, message, meta) {
-    return ['[', level , ']', ' ', message].join('');
-  };
+  this.customFormatter = options.customFormatter || defaultFormatter;
   this.options = extend({
     channel: '#general',
     username: 'winston-slacker',
@@ -48,6 +46,15 @@ function Slack(options) {
       callback(err, body);
     });
   };
+}
+
+/**
+ * Default formatting for messages sent to Slack
+ * @param {string} Logging level
+ * @param {string} Message to send to slack
+ */
+function defaultFormatter (level, message) {
+  return ['[', level , ']', ' ', message].join('');
 }
 
 util.inherits(Slack, winston.Transport);
