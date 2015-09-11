@@ -2,7 +2,7 @@ module.exports = function(config) {
     config.set({
         basePath: '',
         frameworks: ['mocha', 'chai'],
-        files: ['./test/*.spec.js'],
+        files: ['test/*.spec.js'],
         exclude: [],
         reporters: ['progress'],
         port: 9876,
