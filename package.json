@@ -4,7 +4,8 @@
   "description": "Slack integration for Winston",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "gulp",
+    "test": "./node_modules/karma/bin/karma start karma.conf.js --single-run"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
   },
   "homepage": "https://github.com/meerkats/winston-slacker#readme",
   "dependencies": {
+    "karma": "^0.13.9",
     "request": "^2.61.0",
     "util-extend": "^1.0.1",
     "winston": "^1.0.1"
