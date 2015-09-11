@@ -1,102 +1,80 @@
-//var Slack = require('../index.js');
+var request = require('request');
+var sinon = require('sinon');
+var Slack = require('../index.js');
 
 describe('winston-slacker', function () {
   it('should fail if no webhook has been supplied in the options', function () {
-    //expect(new Slack()).to.throw(Error);
-    expect(true).to.equal(true);
+    expect(function () { new Slack(); }).toThrow(new Error('Invalid options parameter'));
+  });
+  it('should have expected default optioins', function () {
+    var webhook = 'https://hooks.slack.com/services/testhook';
+    var default_options = {
+      channel: '#general',
+      username: 'winston-slacker',
+      iconUrl: false,
+      iconEmoji: false,
+      level: 'info',
+      silent: false,
+      raw: false,
+      name: 'slacker',
+      handleExceptions: false
+    };
+    //Add webhook on to the default_options
+    default_options.webhook = webhook;
+    var slack = new Slack({ webhook: webhook });
+    expect(slack.options).toEqual(default_options);
+  });
+  it('should override default options if passed in', function () {
+    var override_options = {
+      channel: '#test',
+      username: 'winston-slacker-test',
+      iconUrl: true,
+      iconEmoji: true,
+      level: 'test',
+      silent: true,
+      raw: true,
+      name: 'tester',
+      handleExceptions: true,
+      webhook: 'https://hooks.slack.com/services/testhook'
+    };
+    var slack = new Slack(override_options);
+    expect(slack.options).toEqual(override_options);
+  });
+  describe('log', function () {
+    var options = null;
+    var slack = null;
+    beforeEach(function(){
+      sinon.stub(request, 'post');
+      options = {
+        webhook: 'https://hooks.slack.com/services/testhook'
+      };
+      slack = new Slack(options);
+      request.post.callsArgWith(1, null, null, 'ok');
+    });
+    afterEach(function(){
+      request.post.restore();
+    });
+    it('should format a message as expected by default', function (done) {
+      slack.log('test', 'test message', {}, function (err, result) {
+        var return_value = request.post.getCall(0).args[0];
+        expect(return_value.body.text).toEqual('[test] test message');
+        done();
+      });
+    });
+    it('should format a message as expected by a custom formatter', function (done) {
+      slack.customFormatter = function (level, message) { return [message, level].join(' '); };
+      slack.log('test', 'test message', {}, function (err, result) {
+        var return_value = request.post.getCall(0).args[0];
+        expect(return_value.body.text).toEqual('test message test');
+        done();
+      });
+    });
+    it('should fail when no message is send to log', function (done) {
+      slack.customFormatter = function (level, message) { };
+      slack.log('test', 'test message', {}, function (err) {
+        expect(err.message).toEqual('No message');
+        done();
+      });
+    });
   });
 });
-//   beforeEach(function(){
-//     sinon.stub(request, 'post');
-//   });
-
-//   it('should callback with ok', function(done){
-//     var input = {
-//       channel: '#test',
-//       text: 'hello',
-//       username: 'test',
-//       icon_emoji: 'smile',
-//       attachments : [{ 
-//         fallback: 'hello',
-//         color: 'good',
-//         fields: [
-//           {title: 'col 1', value: 'hello 1', short: true},
-//           {title: 'col 2', value: 'hello 2', short: true}
-//         ]
-//       }]
-//     };
-//     var expected = {
-//       url: 'https://hooks.slack.com/services/testhook',
-//       body: '{"channel":"#test","text":"hello","username":"test","icon_emoji":"smile","attachments":[{"fallback":"hello","color":"good","fields":[{"title":"col 1","value":"hello 1","short":true},{"title":"col 2","value":"hello 2","short":true}]}]}'
-//     };
-//     request.post.callsArgWith(1, null, null, 'ok');
-//     slack.send(input, function(err, res){
-//       assert.ok(!err);
-//       assert.equal(res, 'ok');
-//       assert.deepEqual(request.post.getCall(0).args[0], expected);
-//       done();
-//     });
-//   });
-
-//   it('should use the default channel', function(done){
-//     var input = {
-//       text: 'hello',
-//       username: 'test',
-//       icon_url: 'drnick.png'
-//     };
-//     var expected = {
-//       url: 'https://hooks.slack.com/services/testhook',
-//       body: '{"channel":"#general","text":"hello","username":"test","icon_url":"drnick.png"}'
-//     };
-//     request.post.callsArgWith(1, null, null, 'ok');
-//     slack.send(input, function(err, res){
-//       assert.ok(!err);
-//       assert.equal(res, 'ok');
-//       assert.deepEqual(request.post.getCall(0).args[0], expected);
-//       done();
-//     });
-//   });
-
-//   it('should error when we have no message', function(done){
-//     var input = {};
-//     var expected = new Error('No message');
-//     slack.send(input, function(err, res){
-//       assert.deepEqual(err, expected);
-//       assert.ok(!res);
-//       done();
-//     });
-//   });
-
-//   afterEach(function(){
-//     request.post.restore();
-//   });
-// });
-
-// describe('test respond', function(){
-
-//   it('should respond!', function(){
-//     var input = {
-//       token: 'token123',
-//       team_id: '123',
-//       channel_id: '2v22c2',
-//       channel_name: 'test channel',
-//       timestamp: '2013-12-13T20:59:03.650Z',
-//       user_id: '1',
-//       user_name: 'test',
-//       text: 'Test text'
-//     };
-//     var expected = {
-//       token: 'token123',
-//       team_id: '123',
-//       channel_id: '2v22c2',
-//       channel_name: 'test channel',
-//       timestamp: new Date('2013-12-13T20:59:03.650Z'),
-//       user_id: '1',
-//       user_name: 'test',
-//       text: 'Test text'
-//     };
-//     var result = slack.respond(input);
-//     assert.deepEqual(result, expected);
-//   });
-
-// });

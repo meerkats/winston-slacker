@@ -21,7 +21,7 @@ function Slack(options) {
     silent: false,
     raw: false,
     name: 'slacker',
-    handleExceptions: false
+    handleExceptions: false,
   }, options);
 
   /**
