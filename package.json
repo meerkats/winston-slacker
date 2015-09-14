@@ -4,7 +4,7 @@
   "description": "Slack integration for Winston",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start karma.conf.js --single-run"
+    "test": "jasmine-node ."
   },
   "repository": {
     "type": "git",
