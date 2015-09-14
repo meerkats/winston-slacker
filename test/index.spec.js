@@ -6,7 +6,7 @@ describe('winston-slacker', function () {
   it('should fail if no webhook has been supplied in the options', function () {
     expect(function () { new Slack(); }).toThrow(new Error('Invalid options parameter'));
   });
-  it('should have expected default optioins', function () {
+  it('should have expected default options', function () {
     var webhook = 'https://hooks.slack.com/services/testhook';
     var default_options = {
       channel: '#general',
