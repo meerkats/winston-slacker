@@ -5,13 +5,16 @@ var winston = require('winston');
 
 /**
  * Slack integration for Winston
+ * @param {string} Webhook for slack
+ * @param {object} Options parameter
+ * @param {function} Custom formatter method for text
  */
-function Slack(options) {
-  if (typeof options !== 'object' || !options.webhook) {
-    throw new Error('Invalid options parameter');
+function Slack(webhook, options, customFormatter) {
+  if (!webhook || typeof webhook !== 'string') {
+    throw new Error('Invalid webhook parameter');
   }
-  this.webhook = options.webhook;
-  this.customFormatter = options.customFormatter || defaultFormatter;
+  this.webhook = webhook;
+  this.customFormatter = customFormatter || defaultFormatter;
   this.options = extend({
     channel: '#general',
     username: 'winston-slacker',
@@ -23,37 +26,37 @@ function Slack(options) {
     name: 'slacker',
     handleExceptions: false,
   }, options);
+}
 
-  /**
+/**
  * Handles the sending of a message to an Incoming webhook
  * @param {text} Message text
  * @param {function} Callback function for post execution
  */
-  this.send = function (message, callback) {
-    callback = callback || function () {};
-    if (!message) {
-      return callback(new Error('No message'));
-    }
-    var requestParams = {
-      url: this.webhook,
-      body: extend(options, { text: message }),
-      json: true
-    };
-    request.post(requestParams, function(err, res, body) {
-      if ((err || body !== 'ok')) {
-        return callback(err || new Error(body));
-      }
-      callback(err, body);
-    });
+function send (message, callback) {
+  callback = callback || function () {};
+  if (!message) {
+    return callback(new Error('No message'));
+  }
+  var requestParams = {
+    url: this.webhook,
+    body: extend(this.options, { text: message }),
+    json: true
   };
-}
+  request.post(requestParams, function (err, res, body) {
+    if (err || body !== 'ok') {
+      return callback(err || new Error(body));
+    }
+    return callback(err, body);
+  });
+};
 
 /**
  * Default formatting for messages sent to Slack
  * @param {string} Logging level
  * @param {string} Message to send to slack
  */
-function defaultFormatter (level, message) {
+function defaultFormatter(level, message) {
   return ['[', level , ']', ' ', message].join('');
 }
 
@@ -68,7 +71,7 @@ winston.transports.Slack = Slack;
  * @param {function} Callback function for post execution
  */
 Slack.prototype.log = function (level, message, meta, callback) {
-  this.send(this.customFormatter(level, message, meta), callback);
+  send.call(this, this.customFormatter(level, message, meta), callback);
 };
 
 module.exports = Slack;
