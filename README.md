@@ -1,5 +1,5 @@
-# winston-slacker
+# winston-slacker ![Travis CI](https://api.travis-ci.com/meerkats/winston-slacker?token==MVCVqrrza3g2DhWaq6jD)
 Slack integration for Winston
 
 #Test Running
-To run tests install Jasmine `npm install jasmine -g` and run `jasmine-node .` or `npm test` from the root directory.
+To run tests run `npm install` and then `npm test` from the root directory.
