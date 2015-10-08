@@ -14,17 +14,17 @@ function defaultFormatter(level, message) {
 
 /**
  * Slack integration for Winston
- * @param {string} Webhook for slack
  * @param {object} Options parameter
  */
-function Slack(webhook, options) {
+function Slack(options) {
   var suppliedOptions = options ? options : {};
-  if (!webhook || typeof webhook !== 'string') {
+  if (!suppliedOptions.webhook || typeof suppliedOptions.webhook !== 'string') {
     throw new Error('Invalid webhook parameter');
   }
-  this.webhook = webhook;
+  this.webhook = suppliedOptions.webhook;
   this.customFormatter = suppliedOptions.customFormatter || defaultFormatter;
   delete suppliedOptions.customFormatter;
+  delete suppliedOptions.webhook;
   this.options = extend({
     channel: '#general',
     username: 'winston-slacker',

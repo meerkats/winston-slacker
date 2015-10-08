@@ -9,13 +9,13 @@ Messages will be sent to the specified slack channel.
 
 ##Options
 Standard options are support as well as the following additions:
+ - webhook: Your channels webhook Url
  - channel: The channel to send messages to
  - username: The name displayed in slack
  - iconUrl: URL for slack bot icon
  - iconImoji: Emoji for slack bot icon
  - customFormatter: Function used to format the message for slack
 ```
-var slackWebhook = 'Your-Slack-Webhook'
 var winston = require('winston');
 var winstonSlacker = require('winston-slacker');
 var options = {
