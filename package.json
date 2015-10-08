@@ -4,7 +4,9 @@
   "description": "Slack integration for Winston",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/jasmine-node/bin/jasmine-node ."
+    "lint": "./node_modules/eslint/bin/eslint.js .",
+    "test-backend": "./node_modules/jasmine-node/bin/jasmine-node .",
+    "test": "npm run-script lint && npm run-script test-backend"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,9 @@
   },
   "homepage": "https://github.com/meerkats/winston-slacker#readme",
   "dependencies": {
+    "eslint": "^1.5.1",
+    "eslint-config-meerkats": "*",
+    "eslint-plugin-shadow-exception": "^1.1.2",
     "jasmine-node": "^1.14.5",
     "request": "^2.61.0",
     "sinon": "^1.16.1",

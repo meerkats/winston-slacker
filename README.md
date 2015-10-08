@@ -2,4 +2,4 @@
 Slack integration for Winston
 
 #Test Running
-To run tests install Jasmine `npm install jasmine -g` and run `jasmine-node .` or `npm test` from the root directory.
+To run tests run `npm install` and then `npm test` from the root directory.

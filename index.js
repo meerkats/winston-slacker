@@ -1,7 +1,16 @@
-var extend = require('util-extend');
-var request = require('request');
-var util = require('util');
-var winston = require('winston');
+const extend = require('util-extend');
+const request = require('request');
+const util = require('util');
+const winston = require('winston');
+
+/**
+ * Default formatting for messages sent to Slack
+ * @param {string} Logging level
+ * @param {string} Message to send to slack
+ */
+function defaultFormatter(level, message) {
+  return ['[', level, ']', ' ', message].join('');
+}
 
 /**
  * Slack integration for Winston
@@ -35,30 +44,21 @@ function Slack(webhook, options) {
  * @param {function} Callback function for post execution
  */
 function send(message, callback) {
-  callback = callback || function () {};
+  const suppliedCallback = callback || function () {};
   if (!message) {
-    return callback(new Error('No message'));
+    return suppliedCallback(new Error('No message'));
   }
-  var requestParams = {
+  const requestParams = {
     url: this.webhook,
     body: extend(this.options, { text: message }),
     json: true
   };
   return request.post(requestParams, function (err, res, body) {
     if (err || body !== 'ok') {
-      return callback(err || new Error(body));
+      return suppliedCallback(err || new Error(body));
     }
-    return callback(null, body);
+    return suppliedCallback(null, body);
   });
-};
-
-/**
- * Default formatting for messages sent to Slack
- * @param {string} Logging level
- * @param {string} Message to send to slack
- */
-function defaultFormatter(level, message) {
-  return ['[', level , ']', ' ', message].join('');
 }
 
 util.inherits(Slack, winston.Transport);
