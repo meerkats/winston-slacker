@@ -7,14 +7,15 @@ var winston = require('winston');
  * Slack integration for Winston
  * @param {string} Webhook for slack
  * @param {object} Options parameter
- * @param {function} Custom formatter method for text
  */
-function Slack(webhook, options, customFormatter) {
+function Slack(webhook, options) {
+  var suppliedOptions = options ? options : {};
   if (!webhook || typeof webhook !== 'string') {
     throw new Error('Invalid webhook parameter');
   }
   this.webhook = webhook;
-  this.customFormatter = customFormatter || defaultFormatter;
+  this.customFormatter = suppliedOptions.customFormatter || defaultFormatter;
+  delete suppliedOptions.customFormatter;
   this.options = extend({
     channel: '#general',
     username: 'winston-slacker',
@@ -25,7 +26,7 @@ function Slack(webhook, options, customFormatter) {
     raw: false,
     name: 'slacker',
     handleExceptions: false,
-  }, options);
+  }, suppliedOptions);
 }
 
 /**
@@ -33,7 +34,7 @@ function Slack(webhook, options, customFormatter) {
  * @param {text} Message text
  * @param {function} Callback function for post execution
  */
-function send (message, callback) {
+function send(message, callback) {
   callback = callback || function () {};
   if (!message) {
     return callback(new Error('No message'));
@@ -43,11 +44,11 @@ function send (message, callback) {
     body: extend(this.options, { text: message }),
     json: true
   };
-  request.post(requestParams, function (err, res, body) {
+  return request.post(requestParams, function (err, res, body) {
     if (err || body !== 'ok') {
       return callback(err || new Error(body));
     }
-    return callback(err, body);
+    return callback(null, body);
   });
 };
 
@@ -71,7 +72,7 @@ winston.transports.Slack = Slack;
  * @param {function} Callback function for post execution
  */
 Slack.prototype.log = function (level, message, meta, callback) {
-  send.call(this, this.customFormatter(level, message, meta), callback);
+  return send.call(this, this.customFormatter(level, message, meta), callback);
 };
 
 module.exports = Slack;
