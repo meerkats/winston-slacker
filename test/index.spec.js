@@ -1,18 +1,21 @@
-var request = require('request');
-var sinon = require('sinon');
-var Slack = require('../index.js');
+const request = require('request');
+const sinon = require('sinon');
+const Slack = require('../index.js');
 
 describe('Slack', function () {
-  var webhook = 'https://hooks.slack.com/services/testhook'
+  const testingWebhook = 'https://hooks.slack.com/services/testhook';
+  const createNewSlack = function (webhook, options) {
+    return new Slack(webhook, options);
+  };
   it('should fail if no webhook has been supplied in the options', function () {
-    expect(function () { new Slack(); }).toThrow(new Error('Invalid webhook parameter'));
+    expect(createNewSlack).toThrow(new Error('Invalid webhook parameter'));
   });
-  if('should correctly set the webhook to the give webhook parameter', function () {
-    var slack = new Slack(webhook);
-    expect(slack.webhook).toEqual(webhook);
+  it('should correctly set the webhook to the give webhook parameter', function () {
+    const slack = createNewSlack(testingWebhook);
+    expect(slack.webhook).toEqual(testingWebhook);
   });
   it('should have expected default options', function () {
-    var default_options = {
+    const defaultOptions = {
       channel: '#general',
       username: 'winston-slacker',
       iconUrl: false,
@@ -23,11 +26,11 @@ describe('Slack', function () {
       name: 'slacker',
       handleExceptions: false
     };
-    var slack = new Slack(webhook);
-    expect(slack.options).toEqual(default_options);
+    const slack = createNewSlack(testingWebhook);
+    expect(slack.options).toEqual(defaultOptions);
   });
   it('should override default options if passed in', function () {
-    var override_options = {
+    const overrideOptions = {
       channel: '#test',
       username: 'winston-slacker-test',
       iconUrl: true,
@@ -38,23 +41,23 @@ describe('Slack', function () {
       name: 'tester',
       handleExceptions: true
     };
-    var slack = new Slack(webhook, override_options);
-    expect(slack.options).toEqual(override_options);
+    const slack = createNewSlack(testingWebhook, overrideOptions);
+    expect(slack.options).toEqual(overrideOptions);
   });
   describe('#log', function () {
     var slack = null;
-    beforeEach(function(){
+    beforeEach(function () {
       sinon.stub(request, 'post');
-      slack = new Slack(webhook);
+      slack = createNewSlack(testingWebhook);
       request.post.callsArgWith(1, null, null, 'ok');
     });
-    afterEach(function(){
+    afterEach(function () {
       request.post.restore();
     });
     it('should format a message as expected by default', function (done) {
-      slack.log('test', 'test message', {}, function (err, result) {
-        var return_value = request.post.getCall(0).args[0];
-        expect(return_value.body.text).toEqual('[test] test message');
+      slack.log('test', 'test message', {}, function () {
+        const returnValue = request.post.getCall(0).args[0];
+        expect(returnValue.body.text).toEqual('[test] test message');
         done();
       });
     });
@@ -62,14 +65,14 @@ describe('Slack', function () {
       slack.customFormatter = function (level, message) {
         return [message, level].join(' ');
       };
-      slack.log('test', 'test message', {}, function (err, result) {
-        var return_value = request.post.getCall(0).args[0];
-        expect(return_value.body.text).toEqual('test message test');
+      slack.log('test', 'test message', {}, function () {
+        const returnValue = request.post.getCall(0).args[0];
+        expect(returnValue.body.text).toEqual('test message test');
         done();
       });
     });
     it('should fail when no message is send to log', function (done) {
-      slack.customFormatter = function (level, message) { };
+      slack.customFormatter = function () { };
       slack.log('test', 'test message', {}, function (err) {
         expect(err.message).toEqual('No message');
         done();
