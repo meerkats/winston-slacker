@@ -1,17 +1,23 @@
+const extend = require('util-extend');
 const request = require('request');
 const sinon = require('sinon');
 const Slack = require('../index.js');
 
 describe('Slack', function () {
   const testingWebhook = 'https://hooks.slack.com/services/testhook';
-  const createNewSlack = function (webhook, options) {
-    return new Slack(webhook, options);
+  const createNewSlack = function (options) {
+    return new Slack(extend(options ? options : {}, {
+      webhook: testingWebhook
+    }));
   };
   it('should fail if no webhook has been supplied in the options', function () {
-    expect(createNewSlack).toThrow(new Error('Invalid webhook parameter'));
+    expect(function () {
+      return new Slack();
+    })
+      .toThrow(new Error('Invalid webhook parameter'));
   });
   it('should correctly set the webhook to the give webhook parameter', function () {
-    const slack = createNewSlack(testingWebhook);
+    const slack = createNewSlack();
     expect(slack.webhook).toEqual(testingWebhook);
   });
   it('should have expected default options', function () {
@@ -26,7 +32,7 @@ describe('Slack', function () {
       name: 'slacker',
       handleExceptions: false
     };
-    const slack = createNewSlack(testingWebhook);
+    const slack = createNewSlack();
     expect(slack.options).toEqual(defaultOptions);
   });
   it('should override default options if passed in', function () {
@@ -41,14 +47,14 @@ describe('Slack', function () {
       name: 'tester',
       handleExceptions: true
     };
-    const slack = createNewSlack(testingWebhook, overrideOptions);
+    const slack = createNewSlack(overrideOptions);
     expect(slack.options).toEqual(overrideOptions);
   });
   describe('#log', function () {
     var slack = null;
     beforeEach(function () {
       sinon.stub(request, 'post');
-      slack = createNewSlack(testingWebhook);
+      slack = createNewSlack();
       request.post.callsArgWith(1, null, null, 'ok');
     });
     afterEach(function () {
