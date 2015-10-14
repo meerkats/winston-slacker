@@ -21,6 +21,7 @@ function Slack(options) {
   if (!suppliedOptions.webhook || typeof suppliedOptions.webhook !== 'string') {
     throw new Error('Invalid webhook parameter');
   }
+  this.name = 'slack';
   this.webhook = suppliedOptions.webhook;
   this.customFormatter = suppliedOptions.customFormatter || defaultFormatter;
   delete suppliedOptions.customFormatter;
