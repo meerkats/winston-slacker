@@ -1,4 +1,4 @@
-# winston-slacker ![Travis CI](https://api.travis-ci.com/meerkats/winston-slacker.svg?token=MVCVqrrza3g2DhWaq6jD)
+# winston-slacker [![Build Status](https://travis-ci.org/meerkats/winston-slacker.svg)](https://travis-ci.org/meerkats/winston-slacker)
 Slack integration for Winston
 
 # Installing
