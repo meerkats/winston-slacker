@@ -1,6 +1,6 @@
 {
   "name": "winston-slacker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Slack integration for Winston",
   "main": "index.js",
   "scripts": {
