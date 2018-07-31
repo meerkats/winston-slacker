@@ -1,5 +1,5 @@
 # winston-slacker [![Build Status](https://travis-ci.org/meerkats/winston-slacker.svg)](https://travis-ci.org/meerkats/winston-slacker)
-Slack integration for Winston
+Slack integration for Winston 3
 
 # Installing
 
@@ -21,11 +21,24 @@ Standard options are support as well as the following additions:
 
 ```js
 var winston = require('winston');
-var winstonSlacker = require('winston-slacker');
+var WinstonSlacker = require('winston-slacker');
 var options = {
   // Set options up
 };
-winston.add(winstonSlacker, options);
+winston.add(new WinstonSlacker(options));
+```
+
+You are done configuring winston-slacker. Now it's time to use it! 
+
+```js
+// Log a message with winston
+winston.log({
+  level: 'info',
+  message: 'User has logged in successfully.'
+})
+
+// Then, see in Slack:
+// [info] User has logged in successfully.
 ```
 
 # Tests
