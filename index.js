@@ -1,7 +1,6 @@
 const extend = require('util-extend');
 const request = require('request');
-const util = require('util');
-const winston = require('winston');
+const Transport = require('winston-transport');
 
 /**
  * Default formatting for messages sent to Slack
@@ -16,64 +15,58 @@ function defaultFormatter(level, message) {
  * Slack integration for Winston
  * @param {object} Options parameter
  */
-function Slack(options) {
-  var suppliedOptions = options ? options : {};
-  if (!suppliedOptions.webhook || typeof suppliedOptions.webhook !== 'string') {
-    throw new Error('Invalid webhook parameter');
-  }
-  this.name = 'slack';
-  this.webhook = suppliedOptions.webhook;
-  this.customFormatter = suppliedOptions.customFormatter || defaultFormatter;
-  delete suppliedOptions.customFormatter;
-  delete suppliedOptions.webhook;
-  this.options = extend({
-    channel: '#general',
-    username: 'winston-slacker',
-    iconUrl: false,
-    iconEmoji: false,
-    level: 'info',
-    silent: false,
-    raw: false,
-    name: 'slacker',
-    handleExceptions: false,
-  }, suppliedOptions);
-}
+module.exports = class Slack extends Transport {
+  constructor(options) {
+    super(options);
 
-/**
- * Handles the sending of a message to an Incoming webhook
- * @param {text} Message text
- * @param {function} Callback function for post execution
- */
-function send(message, callback) {
-  const suppliedCallback = callback || function () {};
-  if (!message) {
-    return suppliedCallback(new Error('No message'));
-  }
-  const requestParams = {
-    url: this.webhook,
-    body: extend(this.options, { text: message }),
-    json: true
-  };
-  return request.post(requestParams, function (err, res, body) {
-    if (err || body !== 'ok') {
-      return suppliedCallback(err || new Error(body));
+    const suppliedOptions = options ? options : {};
+    if (!suppliedOptions.webhook || typeof suppliedOptions.webhook !== 'string') {
+      throw new Error('Invalid webhook parameter');
     }
-    return suppliedCallback(null, body);
-  });
-}
+    this.name = 'slack';
+    this.webhook = suppliedOptions.webhook;
+    this.customFormatter = suppliedOptions.customFormatter || defaultFormatter;
+    delete suppliedOptions.customFormatter;
+    delete suppliedOptions.webhook;
+    this.options = extend({
+      channel: '#general',
+      username: 'winston-slacker',
+      iconUrl: false,
+      iconEmoji: false,
+      level: 'info',
+      silent: false,
+      raw: false,
+      name: 'slacker',
+      handleExceptions: false,
+    }, suppliedOptions);
+  }
 
-util.inherits(Slack, winston.Transport);
-winston.transports.Slack = Slack;
+  /**
+   * Handles the sending of a message to an Incoming webhook
+   * @param {text} Message text
+   * @param {function} Callback function for post execution
+   */
+  log(info, callback) {
+    setImmediate(() => {
+      this.emit('logged', info);
+    });
 
-/**
- * Log method for Winston integration
- * @param {string} Logging level
- * @param {string} Message to send to slack
- * @param {string} Meta data for styling
- * @param {function} Callback function for post execution
- */
-Slack.prototype.log = function (level, message, meta, callback) {
-  return send.call(this, this.customFormatter(level, message, meta), callback);
+    const message = this.customFormatter(info.level, info.message);
+    const suppliedCallback = callback || function () {};
+
+    if (!message) {
+      return suppliedCallback(new Error('No message'));
+    }
+    const requestParams = {
+      url: this.webhook,
+      body: extend(this.options, { text: message }),
+      json: true
+    };
+    return request.post(requestParams, function (err, res, body) {
+      if (err || body !== 'ok') {
+        return suppliedCallback(err || new Error(body));
+      }
+      return suppliedCallback(null, body);
+    });
+  }
 };
-
-module.exports = Slack;

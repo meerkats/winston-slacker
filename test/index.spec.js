@@ -51,7 +51,7 @@ describe('Slack', function () {
     expect(slack.options).toEqual(overrideOptions);
   });
   describe('#log', function () {
-    var slack = null;
+    let slack = null;
     beforeEach(function () {
       sinon.stub(request, 'post');
       slack = createNewSlack();
@@ -61,7 +61,10 @@ describe('Slack', function () {
       request.post.restore();
     });
     it('should format a message as expected by default', function (done) {
-      slack.log('test', 'test message', {}, function () {
+      slack.log({
+        level: 'test',
+        message: 'test message',
+      }, function () {
         const returnValue = request.post.getCall(0).args[0];
         expect(returnValue.body.text).toEqual('[test] test message');
         done();
@@ -71,7 +74,10 @@ describe('Slack', function () {
       slack.customFormatter = function (level, message) {
         return [message, level].join(' ');
       };
-      slack.log('test', 'test message', {}, function () {
+      slack.log({
+        level: 'test',
+        message: 'test message'
+      }, function () {
         const returnValue = request.post.getCall(0).args[0];
         expect(returnValue.body.text).toEqual('test message test');
         done();
@@ -79,7 +85,10 @@ describe('Slack', function () {
     });
     it('should fail when no message is send to log', function (done) {
       slack.customFormatter = function () { };
-      slack.log('test', 'test message', {}, function (err) {
+      slack.log({
+        level: 'test',
+        message: 'test message'
+      }, function (err) {
         expect(err.message).toEqual('No message');
         done();
       });
